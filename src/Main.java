@@ -1,5 +1,8 @@
 import manager.Manager;
-import kanban.*;
+import model.Epic;
+import model.Status;
+import model.Subtask;
+import model.Task;
 
 public class Main {
 
@@ -105,7 +108,7 @@ public class Main {
 
         System.out.println(manager.getEpics());
         System.out.println(manager.getSubtasks());
-        System.out.println(manager.getSubtasksOfEpic(epic1));
+        System.out.println(manager.getSubtasksOfEpicById(1));
 
         manager.removeAllSubtasks();
         manager.removeAllEpics();

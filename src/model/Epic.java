@@ -1,13 +1,12 @@
-package kanban;
+package model;
 
 import java.util.ArrayList;
 
 public class Epic extends Task {
-    private ArrayList<Integer> subtasksId;
+    private ArrayList<Integer> subtasksId = new ArrayList<>();
 
     public Epic(String name, String description) {
         super(name, description);
-        subtasksId = new ArrayList<>();
     }
 
     public Epic(int id, String name, String description) {
@@ -25,7 +24,8 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-        return "Epic{" +
+        return super.toString() +
+                "Epic{" +
                 "subtaskId=" + subtasksId +
                 '}';
     }

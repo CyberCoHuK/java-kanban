@@ -1,4 +1,4 @@
-package kanban;
+package model;
 
 public enum Status {
     NEW,
