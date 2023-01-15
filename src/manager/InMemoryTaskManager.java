@@ -6,12 +6,13 @@ import model.Subtask;
 import model.Task;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.HashMap;
 
 public class InMemoryTaskManager implements TaskManager {
-    int nextTaskId;
-    int nextSubtaskId;
-    int nextEpicId;
+    private int nextTaskId;
+    private int nextSubtaskId;
+    private int nextEpicId;
     private final HashMap<Integer, Task> tasks;
     private final HashMap<Integer, Subtask> subtasks;
     private final HashMap<Integer, Epic> epics;
@@ -135,12 +136,12 @@ public class InMemoryTaskManager implements TaskManager {
         ArrayList<Integer> subtasksId = epic.getSubtasksId();
         for (Integer subtaskId : subtasksId) {
             Status statusOfSubtask = subtasks.get(subtaskId).getStatus();
-            if (statusOfSubtask.equals(Status.NEW)) {
+            if (statusOfSubtask == Status.NEW) {
                 newStatusCounter++;
-            } else if (statusOfSubtask.equals(Status.IN_PROGRESS)) {
+            } else if (statusOfSubtask == Status.IN_PROGRESS) {
                 epic.setStatus(Status.IN_PROGRESS);
                 return;
-            } else if (statusOfSubtask.equals(Status.DONE)) {
+            } else if (statusOfSubtask == Status.DONE) {
                 doneStatusCounter++;
             }
         }
@@ -185,7 +186,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public ArrayList<Task> getHistory() {
+    public List<Task> getHistory() {
         return history.getHistory();
     }
 
