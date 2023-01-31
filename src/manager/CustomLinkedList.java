@@ -11,7 +11,7 @@ public class CustomLinkedList<T> {
 
     private Map<Integer, Node<T>> nodeMap = new HashMap<>();
 
-    public void linkLast(T task) {
+    protected void linkLast(T task) {
         final Node<T> oldTail = tail;
         final Node<T> newNode = new Node<>(tail, task, null);
         tail = newNode;
@@ -23,11 +23,11 @@ public class CustomLinkedList<T> {
         nodeMap.put(task.hashCode(), newNode);
     }
 
-    public boolean contains(T task) {
+    protected boolean contains(T task) {
         return nodeMap.containsKey(task.hashCode());
     }
 
-    public void removeNode(Node<T> node) {
+    protected void removeNode(Node<T> node) {
         if (node == null) {
             return;
         }
@@ -56,11 +56,11 @@ public class CustomLinkedList<T> {
         }
     }
 
-    public Node<T> getNode(Integer id) {
+    protected Node<T> getNode(Integer id) {
         return nodeMap.get(id);
     }
 
-    public List<T> getTasks() {
+    protected List<T> getTasks() {
         if (nodeMap.isEmpty()) {
             return null;
         }
