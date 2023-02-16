@@ -2,7 +2,7 @@ package manager;
 
 public class Manager {
     public static TaskManager getDefault() {
-        return new InMemoryTaskManager();
+        return new FileBackedTasksManager("file.csv");
     }
 
     public static HistoryManager getDefaultHistory() {

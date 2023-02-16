@@ -1,6 +1,8 @@
 import manager.*;
 import model.*;
 
+import java.io.File;
+
 
 public class Main {
 
@@ -32,33 +34,28 @@ public class Main {
         taskManager.addSubtask(subtask1OfEpic1);
         taskManager.addSubtask(subtask2OfEpic1);
         taskManager.addSubtask(subtask3OfEpic1);
+        System.out.println(task1);
+        System.out.println(epic1);
+        System.out.println(subtask1OfEpic1);
+
+        Subtask subtask1OfEpic2 = new Subtask("Подзадача 1 второго эпика",
+                "Описание первой подзадачи",
+                epic2.getId());
+        taskManager.addSubtask(subtask1OfEpic2);
+        Task task3 = new Task("Задача 3", "Надеятся что она готова");
+
+        taskManager.addTask(task3);
         taskManager.getTaskById(1);
-        System.out.println(taskManager.getHistory());
-        taskManager.getTaskById(1);
-        System.out.println(taskManager.getHistory());
+        taskManager.getEpicById(3);
         taskManager.getTaskById(2);
-        System.out.println(taskManager.getHistory());
-        taskManager.getEpicById(1);
-        System.out.println(taskManager.getHistory());
-        taskManager.getEpicById(2);
-        System.out.println(taskManager.getHistory());
-        taskManager.getSubtaskById(1);
-        System.out.println(taskManager.getHistory());
-        taskManager.getEpicById(1);
-        System.out.println(taskManager.getHistory());
-        taskManager.getSubtaskById(1);
-        System.out.println(taskManager.getHistory());
-        taskManager.getSubtaskById(2);
-        System.out.println(taskManager.getHistory());
-        taskManager.getSubtaskById(3);
-        System.out.println(taskManager.getHistory());
-        taskManager.getEpicById(1);
-        System.out.println(taskManager.getHistory());
-        taskManager.getSubtasksOfEpicById(1);
-        System.out.println(taskManager.getHistory());
-        taskManager.removeTaskById(2);
-        System.out.println(taskManager.getHistory());
-        taskManager.removeEpicById(1);
+        TaskManager taskManager1 = FileBackedTasksManager.loadFromFile(new File("file.csv"));
+        System.out.println(taskManager1.getTasks());
+        System.out.println(taskManager.getTasks());
+        System.out.println(taskManager1.getEpics());
+        System.out.println(taskManager.getEpics());
+        System.out.println(taskManager1.getSubtasks());
+        System.out.println(taskManager.getSubtasks());
+        System.out.println(taskManager1.getHistory());
         System.out.println(taskManager.getHistory());
     }
 }

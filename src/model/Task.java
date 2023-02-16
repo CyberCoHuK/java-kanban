@@ -4,9 +4,10 @@ import java.util.Objects;
 
 public class Task {
     private int id;
-    private String name;
-    private String description;
+    private final String name;
+    private final String description;
     private Status status;
+
 
     public Task(String name, String description) {
         this.status = Status.NEW;
@@ -44,15 +45,18 @@ public class Task {
         this.id = id;
     }
 
+    public Type getType() {
+        return Type.TASK;
+    }
+
 
     @Override
     public String toString() {
-        return "Task{" +
-                ", id=" + id +
-                ", name='" + name + '\'' +
-                "description='" + description + '\'' +
-                ", status='" + status + '\'' +
-                '}';
+        return id +
+                "," + getType() +
+                "," + name +
+                "," + status +
+                "," + description + ",";
     }
 
     @Override
@@ -68,6 +72,6 @@ public class Task {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, status);
+        return id;
     }
 }

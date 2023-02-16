@@ -1,7 +1,7 @@
 package model;
 
 public class Subtask extends Task {
-    private int epicId;
+    private final int epicId;
 
     public Subtask(String name, String description, int epicId) {
         super(name, description);
@@ -18,10 +18,13 @@ public class Subtask extends Task {
     }
 
     @Override
+    public Type getType() {
+        return Type.SUBTASK;
+    }
+
+    @Override
     public String toString() {
         return super.toString() +
-                "Subtask{" +
-                "epicId=" + epicId +
-                '}';
+                epicId;
     }
 }
