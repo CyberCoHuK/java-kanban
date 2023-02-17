@@ -5,7 +5,6 @@ import model.Task;
 import java.util.List;
 
 
-
 public class InMemoryHistoryManager implements HistoryManager {
     private final CustomLinkedList<Task> requestHistory = new CustomLinkedList<>();
 

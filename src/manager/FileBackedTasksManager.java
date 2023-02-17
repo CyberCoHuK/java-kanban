@@ -1,5 +1,7 @@
 package manager;
 
+import exception.ManagerLoadException;
+import exception.ManagerSaveException;
 import model.*;
 
 import java.io.*;
@@ -9,6 +11,7 @@ import java.util.List;
 
 public class FileBackedTasksManager extends InMemoryTaskManager implements TaskManager {
     private final String fileName;
+    private static final String HEADER = "id,type,name,status,description,epic,";
 
     public FileBackedTasksManager(String fileName) {
         this.fileName = fileName;
@@ -16,7 +19,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
 
     public void save() {
         try (BufferedWriter fileWriter = new BufferedWriter(new FileWriter(fileName))) {
-            fileWriter.write("id,type,name,status,description,epic,\n");
+            fileWriter.write(HEADER+"\n");
             if (getTasks().size() > 0) {
                 for (Task task : super.getTasks()) {
                     fileWriter.write(task.toString() + "\n");
@@ -41,11 +44,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
                 fileWriter.write(String.join(",", id));
             }
         } catch (IOException e) {
-            throw new ManagerSaveException("Ошибка записи файла");
+            throw new ManagerSaveException("Ошибка записи файла" + e.getMessage());
         }
     }
 
-    public static Task fromString(String value) {
+    public static Task fromString(String value) throws NullPointerException {
         String[] taskData = value.split(",");
         final int id = Integer.parseInt(taskData[0]);
         final Type type = Type.valueOf(taskData[1]);
@@ -62,7 +65,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
             case EPIC:
                 return new Epic(id, name, description, status);
             default:
-                return null;
+                throw new NullPointerException();
         }
     }
 
@@ -80,7 +83,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         try (BufferedReader fileReader = new BufferedReader(new FileReader(file))) {
             while (fileReader.ready()) {
                 String line = fileReader.readLine();
-                if (line.startsWith("id")) continue;
+                if (line.equals(HEADER)) continue;
                 if (!line.isEmpty()) {
                     Task task = fromString(line);
                     if (task instanceof Epic) {
@@ -89,7 +92,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
                     } else if (task instanceof Subtask) {
                         manager.getMapSubtask().put(task.getId(), (Subtask) task);
                     } else {
-                        assert task != null;
                         manager.getMapTask().put(task.getId(), task);
                     }
                 } else {
@@ -102,7 +104,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
                 }
             }
         } catch (IOException e) {
-            throw new ManagerLoadException("Ошибка загрузки файла");
+            throw new ManagerLoadException("Ошибка загрузки файла" + e.getMessage());
         }
         return manager;
     }
