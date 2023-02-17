@@ -19,7 +19,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
 
     public void save() {
         try (BufferedWriter fileWriter = new BufferedWriter(new FileWriter(fileName))) {
-            fileWriter.write(HEADER+"\n");
+            fileWriter.write(HEADER + "\n");
             if (getTasks().size() > 0) {
                 for (Task task : super.getTasks()) {
                     fileWriter.write(task.toString() + "\n");
