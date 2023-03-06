@@ -64,6 +64,7 @@ public class InMemoryTaskManager implements TaskManager {
         for (Epic epic : epics.values()) {
             epic.getSubtasksIds().clear();
             calculateStatusOfEpic(epic);
+            timeOfEpic(epic);
         }
     }
 
@@ -125,6 +126,7 @@ public class InMemoryTaskManager implements TaskManager {
             Epic epic = epics.get(subtask.getEpicId());
             epic.getSubtasksIds().remove(id);
             calculateStatusOfEpic(epic);
+            timeOfEpic(epic);
         }
     }
 
@@ -234,7 +236,7 @@ public class InMemoryTaskManager implements TaskManager {
             Epic epic = epics.get(epicId);
             subtasks.replace(subtask.getId(), subtask);
             calculateStatusOfEpic(epic);
-            if(subtask.getStartTime() != null){
+            if (subtask.getStartTime() != null) {
                 timeOfEpic(epic);
             }
         }
@@ -260,7 +262,9 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     private boolean validateTime(Task t) {
-        if (sortedTasks.isEmpty()) return true;
+        if (sortedTasks.isEmpty()) {
+            return true;
+        }
         for (Task allTask : sortedTasks) {
             if ((t.getStartTime().isEqual(allTask.getStartTime()) || t.getStartTime().isAfter(allTask.getStartTime())) &&
                     (t.getStartTime().isBefore(allTask.getEndTime()) || t.getStartTime().isEqual(allTask.getEndTime())) ||
@@ -279,13 +283,23 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     private void timeOfEpic(Epic epic) {
-        TreeSet<Subtask> sortedSubtask = new TreeSet<>(Comparator.comparing(Task::getStartTime));
-        sortedSubtask.addAll(getSubtasksOfEpicById(epic.getId()));
-        LocalDateTime startOfEpic = sortedSubtask.first().getStartTime();
-        epic.setStartTime(startOfEpic);
-        LocalDateTime endOfEpic = sortedSubtask.last().getEndTime();
-        Duration duration = Duration.between(startOfEpic, endOfEpic);
-        epic.setDuration(duration);
+        if (epic.getSubtasksIds().isEmpty()) {
+            epic.setStartTime(null);
+            epic.setDuration(null);
+        } else {
+            TreeSet<Subtask> sortedSubtask = new TreeSet<>(Comparator.comparing(Subtask::getStartTime));
+            System.out.println(getSubtasksOfEpicById(epic.getId()));
+            for (Subtask subtask : getSubtasksOfEpicById(epic.getId())) {
+                if (subtask.getStartTime() != null) {
+                    sortedSubtask.add(subtask);
+                }
+            }
+            LocalDateTime startOfEpic = sortedSubtask.first().getStartTime();
+            epic.setStartTime(startOfEpic);
+            LocalDateTime endOfEpic = sortedSubtask.last().getEndTime();
+            Duration duration = Duration.between(startOfEpic, endOfEpic);
+            epic.setDuration(duration);
+        }
     }
 
     protected HashMap<Integer, Epic> getMapEpic() {

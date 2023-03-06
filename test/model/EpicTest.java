@@ -9,51 +9,52 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class EpicTest {
-    Epic epic;
-    TaskManager taskManager;
+    private Epic epic;
+    private TaskManager taskManager;
+    private Subtask subtask1;
+    private Subtask subtask2;
 
     @BeforeEach
     void BeforeEach() {
         taskManager = Manager.getDefault();
         epic = new Epic("Epic", "Epic description");
         taskManager.addEpic(epic);
+        subtask1 = new Subtask("Subtask1", "Subtask description", 1);
+        subtask2 = new Subtask("Subtask2", "Subtask description", 1);
     }
+
     @Test
     void CheckEmptyListOfSubtasks() {
         boolean list = taskManager.getSubtasks().isEmpty();
         assertTrue(list);
     }
+
     @Test
-    void CheckAllSubtaskWithStatusNEW(){
-        Subtask subtask1 = new Subtask("Subtask1", "Subtask description",  1);
-        Subtask subtask2 = new Subtask("Subtask2", "Subtask description",  1);
+    void CheckAllSubtaskWithStatusNEW() {
         taskManager.addSubtask(subtask1);
         taskManager.addSubtask(subtask2);
         Assertions.assertEquals(epic.getStatus(), Status.NEW);
     }
+
     @Test
-    void CheckAllSubtaskWithStatusDONE(){
-        Subtask subtask1 = new Subtask("Subtask1", "Subtask description",  1);
-        Subtask subtask2 = new Subtask("Subtask2", "Subtask description",  1);
+    void CheckAllSubtaskWithStatusDONE() {
         subtask1.setStatus(Status.DONE);
         subtask2.setStatus(Status.DONE);
         taskManager.addSubtask(subtask1);
         taskManager.addSubtask(subtask2);
-        assertEquals(epic.getStatus(), Status.DONE);
+        assertEquals(epic.getStatus(), Status.DONE, epic.getSubtasksIds().toString());
     }
+
     @Test
-    void CheckSubtaskWithStatusNEWandDONE(){
-        Subtask subtask1 = new Subtask("Subtask1", "Subtask description",  1);
-        Subtask subtask2 = new Subtask("Subtask2", "Subtask description",  1);
+    void CheckSubtaskWithStatusNEWandDONE() {
         subtask1.setStatus(Status.DONE);
         taskManager.addSubtask(subtask1);
         taskManager.addSubtask(subtask2);
         assertEquals(epic.getStatus(), Status.IN_PROGRESS);
     }
+
     @Test
-    void CheckSubtaskWithStatusINPROGRESS(){
-        Subtask subtask1 = new Subtask("Subtask1", "Subtask description",  1);
-        Subtask subtask2 = new Subtask("Subtask2", "Subtask description",  1);
+    void CheckSubtaskWithStatusINPROGRESS() {
         subtask1.setStatus(Status.IN_PROGRESS);
         taskManager.addSubtask(subtask1);
         taskManager.addSubtask(subtask2);
