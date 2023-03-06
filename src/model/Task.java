@@ -12,7 +12,7 @@ public class Task {
     private Status status;
     private Duration duration;
     private LocalDateTime startTime;
-    private final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy-HH:mm");
+    private final static DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy-HH:mm");
 
 
     public Task(String name, String description) {
@@ -48,15 +48,6 @@ public class Task {
         this.name = name;
         this.description = description;
         this.status = status;
-        this.duration = duration;
-        this.startTime = startTime;
-    }
-
-    public Task(int id, String name, String description, LocalDateTime startTime, Duration duration) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.status = Status.NEW;
         this.duration = duration;
         this.startTime = startTime;
     }
@@ -131,10 +122,11 @@ public class Task {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return id == task.id
-                && Objects.equals(name, task.name)
+        return id == task.id && Objects.equals(name, task.name)
                 && Objects.equals(description, task.description)
-                && status == task.status;
+                && status == task.status
+                && duration.equals(task.duration)
+                && startTime.equals(task.startTime);
     }
 
     @Override

@@ -60,6 +60,11 @@ public class Main {
         System.out.println(taskManager1.getTasks());
         System.out.println(taskManager.getTasks());
         System.out.println(taskManager.getPrioritizedTasks());
+        System.out.println(taskManager.getEpics());
+        System.out.println(taskManager.getSubtasksOfEpicById(3));
+        taskManager.removeSubtaskById(5);
+        taskManager.removeAllSubtasks();
+        System.out.println(taskManager.getEpicById(3));
 
     }
 }
