@@ -1,17 +1,21 @@
 package manager;
 
+import exception.HistoryManagerException;
 import exception.ManagerLoadException;
 import exception.ManagerSaveException;
 import model.*;
 
 import java.io.*;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class FileBackedTasksManager extends InMemoryTaskManager implements TaskManager {
     private final String fileName;
-    private static final String HEADER = "id,type,name,status,description,epic,";
+    private static final String HEADER = "id,type,name,status,description,startTime,endTime,duration,epic,";
 
     public FileBackedTasksManager(String fileName) {
         this.fileName = fileName;
@@ -35,33 +39,49 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
                     fileWriter.write(subtask.toString() + "\n");
                 }
             }
-            if (getHistoryManager().getHistory() != null) {
-                fileWriter.write("\n");
-                ArrayList<String> id = new ArrayList<>();
-                for (Task task : getHistory()) {
-                    id.add(String.valueOf(task.getId()));
+            try {
+                if (getHistoryManager().getHistory() != null) {
+                    fileWriter.write("\n");
+                    ArrayList<String> id = new ArrayList<>();
+                    for (Task task : getHistory()) {
+                        id.add(String.valueOf(task.getId()));
+                    }
+                    fileWriter.write(String.join(",", id));
                 }
-                fileWriter.write(String.join(",", id));
+            } catch (HistoryManagerException e) {
+                e.getMessage();
             }
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка записи файла" + e.getMessage());
         }
     }
 
-    public static Task fromString(String value) throws NullPointerException {
+    private static Task fromString(String value) throws NullPointerException {
+        final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy-HH:mm");
         String[] taskData = value.split(",");
         final int id = Integer.parseInt(taskData[0]);
         final Type type = Type.valueOf(taskData[1]);
         final String name = taskData[2];
         final Status status = Status.valueOf(taskData[3]);
         final String description = taskData[4];
+        LocalDateTime startTime = null;
+        Duration duration = null;
+        if (taskData.length > 6) {
+            startTime = LocalDateTime.parse(taskData[5], FORMATTER);
+            duration = Duration.parse(taskData[7]);
+        }
 
         switch (type) {
             case TASK:
-                return new Task(id, name, description, status);
+                return new Task(id, name, description, status, startTime, duration);
             case SUBTASK:
-                int epicId = Integer.parseInt(taskData[5]);
-                return new Subtask(id, name, description, status, epicId);
+                int epicId;
+                if (taskData.length > 6) {
+                    epicId = Integer.parseInt(taskData[8]);
+                } else {
+                    epicId = Integer.parseInt(taskData[5]);
+                }
+                return new Subtask(id, name, description, status, epicId, startTime, duration);
             case EPIC:
                 return new Epic(id, name, description, status);
             default:
@@ -69,7 +89,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         }
     }
 
-    public static List<Integer> historyFromString(String history) {
+    private static List<Integer> historyFromString(String history) {
         String[] values = history.split(",");
         List<Integer> result = new ArrayList<>();
         for (String val : values) {
@@ -104,7 +124,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
                 }
             }
         } catch (IOException e) {
-            throw new ManagerLoadException("Ошибка загрузки файла" + e.getMessage());
+            throw new ManagerLoadException("Ошибка загрузки файла " + e.getMessage());
         }
         return manager;
     }

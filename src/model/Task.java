@@ -1,5 +1,8 @@
 package model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Task {
@@ -7,6 +10,9 @@ public class Task {
     private final String name;
     private final String description;
     private Status status;
+    private Duration duration;
+    private LocalDateTime startTime;
+    private final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy-HH:mm");
 
 
     public Task(String name, String description) {
@@ -29,6 +35,32 @@ public class Task {
         this.status = Status.NEW;
     }
 
+    public Task(String name, String description, LocalDateTime startTime, Duration duration) {
+        this.status = Status.NEW;
+        this.name = name;
+        this.description = description;
+        this.duration = duration;
+        this.startTime = startTime;
+    }
+
+    public Task(int id, String name, String description, Status status, LocalDateTime startTime, Duration duration) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.status = status;
+        this.duration = duration;
+        this.startTime = startTime;
+    }
+
+    public Task(int id, String name, String description, LocalDateTime startTime, Duration duration) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.status = Status.NEW;
+        this.duration = duration;
+        this.startTime = startTime;
+    }
+
     public Status getStatus() {
         return status;
     }
@@ -49,14 +81,49 @@ public class Task {
         return Type.TASK;
     }
 
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        if (startTime != null && duration != null) {
+            return startTime.plus(duration);
+        }
+        return getStartTime();
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
 
     @Override
     public String toString() {
-        return id +
-                "," + getType() +
-                "," + name +
-                "," + status +
-                "," + description + ",";
+        if (startTime != null) {
+            return id +
+                    "," + getType() +
+                    "," + name +
+                    "," + status +
+                    "," + description +
+                    "," + startTime.format(FORMATTER) +
+                    "," + getEndTime().format(FORMATTER) +
+                    "," + duration;
+        } else {
+            return id +
+                    "," + getType() +
+                    "," + name +
+                    "," + status +
+                    "," + description;
+        }
+
     }
 
     @Override
