@@ -20,7 +20,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
     public FileBackedTasksManager(String fileName) {
         this.fileName = fileName;
     }
-
     public void save() {
         try (BufferedWriter fileWriter = new BufferedWriter(new FileWriter(fileName))) {
             fileWriter.write(HEADER + "\n");

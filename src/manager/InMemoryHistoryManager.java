@@ -1,6 +1,5 @@
 package manager;
 
-import exception.HistoryManagerException;
 import model.Task;
 
 import java.util.List;
@@ -25,12 +24,7 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public List<Task> getHistory() {
-        if (requestHistory.getTasks() != null) {
-            return requestHistory.getTasks();
-        } else {
-            throw new HistoryManagerException("Вызвана пустая история");
-        }
-
+        return requestHistory.getTasks();
     }
 }
 
