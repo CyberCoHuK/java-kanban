@@ -13,9 +13,18 @@ import java.time.LocalDateTime;
 public class Main {
 
     public static void main(String[] args) throws IOException {
+
         KVServer kvServer = new KVServer();
         kvServer.start();
         TaskManager taskManager = Manager.getDefault();
+        Task task1 = new Task("Задача 1", "Надо сделать доску");
+        Task task2 = new Task("Задача 2", "Надеятся что она готова",
+                LocalDateTime.of(2000, 1, 2, 0, 0),
+                Duration.ofDays(3));
+        taskManager.addTask(task1);
+        taskManager.addTask(task2);
+        HttpTaskServer httpTaskServer = new HttpTaskServer(taskManager);
+        /* TaskManager taskManager = Manager.getDefault();
         //Tests
         Task task1 = new Task("Задача 1", "Надо сделать доску");
         Task task2 = new Task("Задача 2", "Надеятся что она готова",
@@ -78,7 +87,7 @@ public class Main {
         System.out.println(taskManager.getHistory());
         taskManager.removeEpicById(1);
         System.out.println(taskManager.getHistory());
-        //kvServer.stop();
+        //kvServer.stop();*/
     }
 }
 

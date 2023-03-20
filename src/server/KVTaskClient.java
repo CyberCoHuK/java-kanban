@@ -14,24 +14,28 @@ public class KVTaskClient {
     public static final String API_TOKEN = "?API_TOKEN=";
     String url;
     String apiToken;
+    private HttpClient httpClient;
 
     public KVTaskClient(int port) {
         url = "http://localhost:" + port;
-        apiToken = register(url);
+        httpClient = HttpClient.newHttpClient();
+        register(httpClient, url);
     }
 
-    private String register(String url) {
+    private void register(HttpClient httpClient, String url) {
         try {
-            HttpClient httpClient = HttpClient.newHttpClient();
             HttpRequest httpRequest = HttpRequest.newBuilder()
                     .uri(URI.create(url + URN_REGISTER))
                     .GET()
+                    .version(HttpClient.Version.HTTP_1_1)
+                    .header("Accept", "text/html")
                     .build();
-            HttpResponse<String> httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+            HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
+            HttpResponse<String> httpResponse = httpClient.send(httpRequest, handler);
             if (httpResponse.statusCode() != 200) {
                 throw new ClientRegisterException("Ошибка регистрации");
             }
-            return httpResponse.body();
+            apiToken = httpResponse.body();
         } catch (Exception exception) {
             throw new ClientRegisterException("Ошибка регистрации");
         }
