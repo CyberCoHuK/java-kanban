@@ -1,6 +1,5 @@
 package manager;
 
-import exception.HistoryManagerException;
 import exception.ManagerLoadException;
 import exception.ManagerSaveException;
 import model.*;
@@ -20,6 +19,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
     public FileBackedTasksManager(String fileName) {
         this.fileName = fileName;
     }
+
     public void save() {
         try (BufferedWriter fileWriter = new BufferedWriter(new FileWriter(fileName))) {
             fileWriter.write(HEADER + "\n");
@@ -38,17 +38,13 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
                     fileWriter.write(subtask.toString() + "\n");
                 }
             }
-            try {
-                if (getHistoryManager().getHistory() != null) {
-                    fileWriter.write("\n");
-                    ArrayList<String> id = new ArrayList<>();
-                    for (Task task : getHistory()) {
-                        id.add(String.valueOf(task.getId()));
-                    }
-                    fileWriter.write(String.join(",", id));
+            if (getHistoryManager().getHistory() != null) {
+                fileWriter.write("\n");
+                ArrayList<String> id = new ArrayList<>();
+                for (Task task : getHistory()) {
+                    id.add(String.valueOf(task.getId()));
                 }
-            } catch (HistoryManagerException e) {
-                e.getMessage();
+                fileWriter.write(String.join(",", id));
             }
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка записи файла" + e.getMessage());

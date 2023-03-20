@@ -2,7 +2,6 @@ package manager;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import exception.HistoryManagerException;
 import model.*;
 import server.KVTaskClient;
 
@@ -37,16 +36,12 @@ public class HttpTaskManager extends FileBackedTasksManager {
             String allSubTasks = gson.toJson(getSubtasks());
             kvTaskClient.put(SUBTASKS, allSubTasks);
         }
-        try {
-            if (getHistoryManager().getHistory() != null) {
-                List<Integer> historyList = getHistory().stream()
-                        .map(Task::getId)
-                        .collect(Collectors.toList());
-                String history = gson.toJson(historyList);
-                kvTaskClient.put(HISTORY, history);
-            }
-        } catch (HistoryManagerException e) {
-            e.getMessage();
+        if (getHistoryManager().getHistory() != null) {
+            List<Integer> historyList = getHistory().stream()
+                    .map(Task::getId)
+                    .collect(Collectors.toList());
+            String history = gson.toJson(historyList);
+            kvTaskClient.put(HISTORY, history);
         }
     }
 
