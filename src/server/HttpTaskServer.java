@@ -1,5 +1,6 @@
 package server;
 
+import adapters.DurationTypeAdapter;
 import adapters.LocalDateTimeAdapter;
 import com.google.gson.*;
 import com.sun.net.httpserver.HttpExchange;
@@ -23,7 +24,11 @@ public class HttpTaskServer {
     private final HttpServer httpServer;
     private static final TaskManager taskManager = Manager.getFileBacked();
     private static final GsonBuilder gsonBuilder = new GsonBuilder();
-    private static final Gson gson = gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter()).create();
+    private static final Gson gson = gsonBuilder
+            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
+            .registerTypeAdapter(Duration.class, new DurationTypeAdapter())
+            .serializeNulls()
+            .create();
 
 
     public HttpTaskServer() throws IOException {
@@ -31,7 +36,7 @@ public class HttpTaskServer {
         httpServer.createContext("/tasks/history", new HistoryHandler());
         httpServer.createContext("/tasks/task", new TaskHandler());
         httpServer.createContext("/tasks/epic", new EpicHandler());
-        httpServer.createContext("/tasks/subtasks", new SubtaskHandler());
+        httpServer.createContext("/tasks/subtask", new SubtaskHandler());
         httpServer.createContext("/tasks", new PrioritizedTasksHandler());
     }
 
@@ -100,9 +105,9 @@ public class HttpTaskServer {
                         }
                         JsonObject jsonObject = jsonElement.getAsJsonObject();
                         Task task = gson.fromJson(jsonObject, Task.class);
-                        List<Task> taskMap = taskManager.getTasks();
+                        List<Task> tasks = taskManager.getTasks();
                         if (httpExchange.getRequestURI().toString().equals("/tasks/task/")) {
-                            if (taskMap.contains(task)) {
+                            if (tasks.contains(task)) {
                                 taskManager.updateTask(task);
                             } else {
                                 taskManager.addTask(task);
@@ -316,12 +321,7 @@ public class HttpTaskServer {
         httpServer.stop(delay);
     }
 
-    public void test() {
-        Task task1 = new Task("Задача 1", "Надо сделать доску");
-        Task task2 = new Task("Задача 2", "Надеятся что она готова",
-                LocalDateTime.of(2000, 1, 2, 0, 0),
-                Duration.ofDays(3));
-        taskManager.addTask(task1);
-        taskManager.addTask(task2);
+    public TaskManager getFileBackedTasksManager() {
+        return taskManager;
     }
 }

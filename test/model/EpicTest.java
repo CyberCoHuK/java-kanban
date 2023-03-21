@@ -16,7 +16,7 @@ class EpicTest {
 
     @BeforeEach
     void BeforeEach() {
-        taskManager = Manager.getDefault();
+        taskManager = Manager.getFileBacked();
         epic = new Epic("Epic", "Epic description");
         taskManager.addEpic(epic);
         subtask1 = new Subtask("Subtask1", "Subtask description", 1);

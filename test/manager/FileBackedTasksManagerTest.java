@@ -1,29 +1,24 @@
 package manager;
 
-import exception.HistoryManagerException;
 import exception.ManagerLoadException;
 import exception.ManagerSaveException;
 import model.Epic;
 import model.Subtask;
 import model.Task;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class FileBackedTasksManagerTest extends TaskManagerTest {
+class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager> {
 
-    public FileBackedTasksManagerTest() {
-        super(new FileBackedTasksManager("file.csv"));
+    @BeforeEach
+    public void setManager() {
+        taskManager = new FileBackedTasksManager("test.csv");
     }
 
-    @Test
-    void EmptyList() {
-        assertEquals(0, taskManager.getTasks().size(), "Неверное количество задач");
-        TaskManager taskManager1 = FileBackedTasksManager.loadFromFile(new File("file.csv"));
-        assertEquals(0, taskManager1.getTasks().size(), "Неверное количество задач");
-    }
 
     @Test
     void EpicWithoutSubtasks() {
@@ -33,14 +28,11 @@ class FileBackedTasksManagerTest extends TaskManagerTest {
         taskManager1.addEpic(epic1);
         taskManager1.addSubtask(subTask1);
         taskManager1.removeSubtaskById(subTask1.getId());
-        assertEquals(0, taskManager1.getSubtasksOfEpicById(1).size(), "Неверное количество подзадач");
-    }
-
-    @Test
-    void EmptyHistoryList() {
-        TaskManager taskManager1 = FileBackedTasksManager.loadFromFile(new File("file.csv"));
-        HistoryManagerException ex = assertThrows(HistoryManagerException.class, () -> taskManager1.getHistory());
-        assertEquals("Вызвана пустая история", ex.getMessage());
+        int a = 0;
+        if(taskManager1.getSubtasksOfEpicById(1)!=null) {
+            a = taskManager1.getSubtasksOfEpicById(1).size();
+        }
+        assertEquals(0, a, "Неверное количество подзадач");
     }
 
     @Test

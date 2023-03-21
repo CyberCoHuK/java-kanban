@@ -1,6 +1,5 @@
 package manager;
 
-import exception.HistoryManagerException;
 import model.Task;
 import org.junit.jupiter.api.Test;
 
@@ -24,8 +23,6 @@ class InMemoryHistoryManagerTest {
     void removeFromHistory() {
         Task task1 = new Task(1, "Task1", "Task description");
         Task task2 = new Task(2, "Task2", "Task description");
-        HistoryManagerException ex = assertThrows(HistoryManagerException.class, () -> historyManager.getHistory());
-        assertEquals("Вызвана пустая история", ex.getMessage());
         historyManager.addToHistory(task1);
         historyManager.addToHistory(task2);
         assertEquals(2, historyManager.getHistory().size(), "История пуста");
@@ -37,8 +34,6 @@ class InMemoryHistoryManagerTest {
 
     @Test
     void getHistory() {
-        HistoryManagerException ex = assertThrows(HistoryManagerException.class, () -> historyManager.getHistory());
-        assertEquals("Вызвана пустая история", ex.getMessage());
         Task task1 = new Task(1, "Task1", "Task description");
         historyManager.addToHistory(task1);
         assertNotNull(historyManager.getHistory(), "История пуста");

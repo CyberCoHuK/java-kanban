@@ -59,7 +59,6 @@ public class Main {
         kvServer.stop();
         HttpTaskServer httpTaskServer = new HttpTaskServer();
         httpTaskServer.startServer();
-        httpTaskServer.test();
         httpTaskServer.stopServer(1);
     }
 }

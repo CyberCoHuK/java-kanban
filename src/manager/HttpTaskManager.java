@@ -1,11 +1,16 @@
 package manager;
 
+import adapters.DurationTypeAdapter;
+import adapters.LocalDateTimeAdapter;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import model.*;
 import server.KVTaskClient;
 
 import java.lang.reflect.Type;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,10 +21,15 @@ public class HttpTaskManager extends FileBackedTasksManager {
     public static final String SUBTASKS = "subtasks";
     public static final String HISTORY = "history";
     private final KVTaskClient kvTaskClient;
-    private final Gson gson = new Gson();
+    private final Gson gson;
 
     public HttpTaskManager(int port) {
-        super("file.csv");
+        super(null);
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter());
+        gsonBuilder.registerTypeAdapter(Duration.class, new DurationTypeAdapter());
+        gsonBuilder.serializeNulls();
+        gson = gsonBuilder.create();
         kvTaskClient = new KVTaskClient(port);
     }
 
@@ -58,7 +68,10 @@ public class HttpTaskManager extends FileBackedTasksManager {
             Type epicType = new TypeToken<ArrayList<Epic>>() {
             }.getType();
             ArrayList<Epic> epics = gson.fromJson(kvTaskClient.load(EPICS), epicType);
-            epics.forEach(this::addEpic);
+            epics.forEach(e -> {
+                e.getSubtasksIds().clear();
+                addEpic(e);
+            });
         } catch (Exception ex) {
             System.out.println("Проблемы при загрузке эпиков");
         }

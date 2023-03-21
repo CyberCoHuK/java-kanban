@@ -14,8 +14,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-abstract class TaskManagerTest {
-    public static TaskManager taskManager;
+public abstract class TaskManagerTest<T extends TaskManager> {
+    protected T taskManager;
     public static Epic epic1;
     public static Epic epic2;
     public static Subtask subTask1;
@@ -24,9 +24,7 @@ abstract class TaskManagerTest {
     public static Task task1;
     public static Task task2;
 
-    public TaskManagerTest(TaskManager taskManager) {
-        TaskManagerTest.taskManager = taskManager;
-    }
+
 
     @Test
     void getTasks() {
