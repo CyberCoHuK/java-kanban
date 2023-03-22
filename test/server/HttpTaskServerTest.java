@@ -6,7 +6,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import manager.FileBackedTasksManager;
+import manager.TaskManager;
 import model.Epic;
 import model.Status;
 import model.Subtask;
@@ -24,15 +24,7 @@ import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.*;
 
 class HttpTaskServerTest {
-    static HttpTaskServer httpTaskServer;
-
-    static {
-        try {
-            httpTaskServer = new HttpTaskServer();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    HttpTaskServer httpTaskServer;
 
     HttpClient client = HttpClient.newHttpClient();
     GsonBuilder gsonBuilder = new GsonBuilder();
@@ -40,24 +32,22 @@ class HttpTaskServerTest {
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
             .registerTypeAdapter(Duration.class, new DurationTypeAdapter())
             .create();
-    static FileBackedTasksManager manager = (FileBackedTasksManager) httpTaskServer.getFileBackedTasksManager();
+    TaskManager manager;
 
-    @BeforeAll
-    static void beforeAll() {
+
+    @BeforeEach
+    void beforeEach() throws IOException {
+        httpTaskServer = new HttpTaskServer();
         httpTaskServer.startServer();
-
+        manager = httpTaskServer.getFileBackedTasksManager();
         Task task1 = new Task("Задача 1", "Старое описание",
                 LocalDateTime.of(2001, 1, 2, 0, 0),
                 Duration.ofDays(3));
         Task task2 = new Task("Задача 1", "Старое описание",
                 LocalDateTime.of(2000, 2, 2, 0, 0),
                 Duration.ofDays(3));
-        manager.addTask(task1);
-        manager.addTask(task2);
         Epic epic1 = new Epic("Epic1", "Epic description1");
         Epic epic2 = new Epic("Epic2", "Epic description1");
-        manager.addEpic(epic1);
-        manager.addEpic(epic2);
         Subtask subtask1 = new Subtask("Подзадача 1 первого эпика",
                 "Описание первой подзадачи",
                 3,
@@ -73,14 +63,19 @@ class HttpTaskServerTest {
                 3,
                 LocalDateTime.of(2000, 1, 12, 0, 0),
                 Duration.ofDays(1));
+        manager.addTask(task1);
+        manager.addTask(task2);
+        manager.addEpic(epic1);
+        manager.addEpic(epic2);
         manager.addSubtask(subtask1);
         manager.addSubtask(subtask2);
         manager.addSubtask(subtask3);
     }
 
-    @AfterAll
-    static void afterAll() {
-        httpTaskServer.stopServer(1);
+
+    @AfterEach
+    void afterEach() {
+        httpTaskServer.stopServer(0);
     }
 
     @Test
@@ -94,16 +89,11 @@ class HttpTaskServerTest {
 
     @Test
     void deleteTaskByIdCheck() throws IOException, InterruptedException {
-        URI url = URI.create("http://localhost:8080/tasks/task/?id=9");
-        Task newTask = new Task("Задача 4", "проверка",
-                LocalDateTime.of(2020, 5, 2, 0, 0),
-                Duration.ofDays(3));
-        newTask.setId(9);
-        manager.addTask(newTask);
+        URI url = URI.create("http://localhost:8080/tasks/task/?id=2");
         HttpRequest request = HttpRequest.newBuilder().uri(url).DELETE()
                 .header("Content-Type", "application/json").build();
         client.send(request, HttpResponse.BodyHandlers.ofString());
-        assertEquals(3, manager.getTasks().size(), "Получен не верный Json с задачами");
+        assertEquals(1, manager.getTasks().size(), "Получен не верный Json с задачами");
     }
 
     @Test

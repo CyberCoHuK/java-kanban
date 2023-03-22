@@ -22,9 +22,9 @@ import java.util.List;
 public class HttpTaskServer {
     public static final int PORT = 8080;
     private final HttpServer httpServer;
-    private static final TaskManager taskManager = Manager.getFileBacked();
-    private static final GsonBuilder gsonBuilder = new GsonBuilder();
-    private static final Gson gson = gsonBuilder
+    private final TaskManager taskManager = Manager.getFileBacked();
+    private final GsonBuilder gsonBuilder = new GsonBuilder();
+    private final Gson gson = gsonBuilder
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
             .registerTypeAdapter(Duration.class, new DurationTypeAdapter())
             .serializeNulls()
@@ -40,7 +40,7 @@ public class HttpTaskServer {
         httpServer.createContext("/tasks", new PrioritizedTasksHandler());
     }
 
-    static class HistoryHandler implements HttpHandler {
+    class HistoryHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange httpExchange) throws IOException {
             URI path = httpExchange.getRequestURI();
@@ -69,7 +69,7 @@ public class HttpTaskServer {
         }
     }
 
-    static class TaskHandler implements HttpHandler {
+    class TaskHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange httpExchange) throws IOException {
             URI path = httpExchange.getRequestURI();
@@ -138,7 +138,7 @@ public class HttpTaskServer {
         }
     }
 
-    static class EpicHandler implements HttpHandler {
+    class EpicHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange httpExchange) throws IOException {
             URI path = httpExchange.getRequestURI();
@@ -207,7 +207,7 @@ public class HttpTaskServer {
         }
     }
 
-    static class SubtaskHandler implements HttpHandler {
+    class SubtaskHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange httpExchange) throws IOException {
             URI path = httpExchange.getRequestURI();
@@ -284,7 +284,7 @@ public class HttpTaskServer {
         }
     }
 
-    static class PrioritizedTasksHandler implements HttpHandler {
+    class PrioritizedTasksHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange httpExchange) throws IOException {
             URI path = httpExchange.getRequestURI();

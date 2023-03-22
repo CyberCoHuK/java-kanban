@@ -1,6 +1,7 @@
 package server;
 
 import exception.*;
+
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -14,7 +15,7 @@ public class KVTaskClient {
     public static final String API_TOKEN = "?API_TOKEN=";
     String url;
     String apiToken;
-    private HttpClient httpClient;
+    private final HttpClient httpClient;
 
     public KVTaskClient(int port) {
         url = "http://localhost:" + port;
